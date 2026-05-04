@@ -73,7 +73,7 @@ void rankList() {
         return;
     }
 
-    // Read all students into array
+
     while (fscanf(fp, "%d %s %f %f %f %f",
            &s[i].roll, s[i].name, &s[i].m1,
            &s[i].m2, &s[i].m3, &s[i].total) != EOF) {
@@ -83,7 +83,7 @@ void rankList() {
     count = i;
     fclose(fp);
 
-    
+
     for (i = 0; i < count - 1; i++) {
         for (j = i + 1; j < count; j++) {
             if (s[i].total < s[j].total) {
