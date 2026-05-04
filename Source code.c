@@ -1,51 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Structure to store student data
-struct student {
+struct Student {
     int roll;
-    char name[30];
+    char name[50];
     float m1, m2, m3;
     float total;
 };
 
-// Function to add student
-void add() {
+void addStudent() {
     FILE *fp;
-    struct student s;
+    struct Student s;
 
-    fp = fopen("students.dat", "ab"); // open file to add data
-
-    if (fp == NULL) {
-        printf("File error!\n");
-        return;
-    }
+    fp = fopen("students.txt", "a");
 
     printf("\nEnter Roll Number: ");
     scanf("%d", &s.roll);
 
     printf("Enter Name: ");
-    scanf("%s", s.name); // simple input (no spaces)
+    scanf(" %[^\n]", s.name);
 
-    printf("Enter marks of 3 subjects: ");
+    printf("Enter 3 marks: ");
     scanf("%f %f %f", &s.m1, &s.m2, &s.m3);
 
-    // calculate total
     s.total = s.m1 + s.m2 + s.m3;
 
-    fwrite(&s, sizeof(s), 1, fp); // write to file
+    fprintf(fp, "%d %s %f %f %f %f\n",
+            s.roll, s.name, s.m1, s.m2, s.m3, s.total);
 
     fclose(fp);
 
-    printf("Record Added!\n");
+    printf("Student added!\n");
 }
 
-// Function to display all students
-void display() {
+void displayStudents() {
     FILE *fp;
-    struct student s;
+    struct Student s;
 
-    fp = fopen("students.dat", "rb"); // open file to read
+    fp = fopen("students.txt", "r");
 
     if (fp == NULL) {
         printf("No records found!\n");
@@ -54,7 +46,9 @@ void display() {
 
     printf("\n--- Student Records ---\n");
 
-    while (fread(&s, sizeof(s), 1, fp)) {
+    while (fscanf(fp, "%d %s %f %f %f %f",
+           &s.roll, s.name, &s.m1, &s.m2, &s.m3, &s.total) != EOF) {
+
         printf("\nRoll: %d", s.roll);
         printf("\nName: %s", s.name);
         printf("\nMarks: %.1f %.1f %.1f", s.m1, s.m2, s.m3);
@@ -64,31 +58,32 @@ void display() {
     fclose(fp);
 }
 
-// Function to show rank list
 void rankList() {
     FILE *fp;
-    struct student s[50];
-    int n = 0, i, j;
+    struct Student s[100], temp;
+    int i = 0, j, count = 0;
 
-    fp = fopen("students.dat", "rb");
+    fp = fopen("students.txt", "r");
 
     if (fp == NULL) {
         printf("No records found!\n");
         return;
     }
 
-    // read all students into array
-    while (fread(&s[n], sizeof(struct student), 1, fp)) {
-        n++;
+    // Read all students into array
+    while (fscanf(fp, "%d %s %f %f %f %f",
+           &s[i].roll, s[i].name, &s[i].m1,
+           &s[i].m2, &s[i].m3, &s[i].total) != EOF) {
+        i++;
     }
 
+    count = i;
     fclose(fp);
 
-    // simple sorting (descending order of total)
-    for (i = 0; i < n; i++) {
-        for (j = i + 1; j < n; j++) {
+    for (i = 0; i < count - 1; i++) {
+        for (j = i + 1; j < count; j++) {
             if (s[i].total < s[j].total) {
-                struct student temp = s[i];
+                temp = s[i];
                 s[i] = s[j];
                 s[j] = temp;
             }
@@ -97,43 +92,34 @@ void rankList() {
 
     printf("\n--- Rank List ---\n");
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < count; i++) {
         printf("\nRank %d", i + 1);
-        printf("\nRoll: %d", s[i].roll);
         printf("\nName: %s", s[i].name);
         printf("\nTotal: %.1f\n", s[i].total);
     }
-}
 
-// Main menu
 int main() {
     int choice;
 
-    while (1) {
-        printf("\n\n1. Add Student");
-        printf("\n2. Display Students");
-        printf("\n3. Rank List");
-        printf("\n4. Exit");
+    do {
+        printf("\n\n===== MENU =====\n");
+        printf("1. Add Student\n");
+        printf("2. Display Students\n");
+        printf("3. Rank List\n");
+        printf("4. Exit\n");
 
-        printf("\nEnter choice: ");
+        printf("Enter choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
-            case 1:
-                add();
-                break;
-            case 2:
-                display();
-                break;
-            case 3:
-                rankList();
-                break;
-            case 4:
-                exit(0);
-            default:
-                printf("Wrong choice!\n");
+            case 1: addStudent(); break;
+            case 2: displayStudents(); break;
+            case 3: rankList(); break;
+            case 4: printf("Bye!\n"); break;
+            default: printf("Invalid choice!\n");
         }
-    }
+
+    } while (choice != 4);
 
     return 0;
 }
