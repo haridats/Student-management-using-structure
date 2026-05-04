@@ -8,6 +8,7 @@ struct Student {
     float total;
 };
 
+
 void addStudent() {
     FILE *fp;
     struct Student s;
@@ -32,6 +33,7 @@ void addStudent() {
 
     printf("Student added!\n");
 }
+
 
 void displayStudents() {
     FILE *fp;
@@ -58,6 +60,7 @@ void displayStudents() {
     fclose(fp);
 }
 
+
 void rankList() {
     FILE *fp;
     struct Student s[100], temp;
@@ -80,6 +83,7 @@ void rankList() {
     count = i;
     fclose(fp);
 
+    
     for (i = 0; i < count - 1; i++) {
         for (j = i + 1; j < count; j++) {
             if (s[i].total < s[j].total) {
@@ -97,6 +101,8 @@ void rankList() {
         printf("\nName: %s", s[i].name);
         printf("\nTotal: %.1f\n", s[i].total);
     }
+}
+
 
 int main() {
     int choice;
